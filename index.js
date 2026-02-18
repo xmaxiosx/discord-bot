@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits } = require('discord.js');
+const { Client, GatewayIntentBits, Partials } = require('discord.js');
 
 const client = new Client({
     intents: [
@@ -9,11 +9,12 @@ const client = new Client({
         GatewayIntentBits.GuildMessageReactions,
     ],
     partials: [
-        partials.message,
-        partials.channel,
-        partials.reaction
+        Partials.Message,
+        Partials.Channel,
+        Partials.Reaction
     ]
 });
+
 
 client.on('ready', () => {
     console.log(`Connecté en tant que ${client.user.tag}`);
