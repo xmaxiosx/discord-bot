@@ -47,7 +47,7 @@ client.on('messageReactionRemove', async (reaction, user) => {
     if (reaction.partial) await reaction.fetch();
     if (user.bot) return;
 
-    if (reaction.emoji.name === '🔥') {
+    if (reaction.emoji.name === '👍') {
         const guild = reaction.message.guild;
         const member = guild.members.cache.get(user.id);
 
