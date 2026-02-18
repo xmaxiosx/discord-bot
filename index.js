@@ -4,7 +4,10 @@ const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildMessageReactions,
+
     ]
 });
 
@@ -27,7 +30,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
         const guild = reaction.message.guild;
         const member = guild.members.cache.get(user.id);
 
-        const role = guild.roles.cache.find(r => r.name === Mii); // Mets le nom du rôle ici
+        const role = guild.roles.cache.find(r => r.name === "Mii"); // Mets le nom du rôle ici
 
         if (role) {
             await member.roles.add(role);
