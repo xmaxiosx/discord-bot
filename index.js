@@ -24,7 +24,7 @@ client.on('messageCreate', async (message) => {
     if (message.content === '!role') {
 
         // Vérifie si l'utilisateur a le rôle
-        const role = message.guild.roles.cache.find(r => r.name === "Admin");
+        const role = message.guild.roles.cache.find(r => r.name === "Maire");
 
         if (!message.member.roles.cache.has(role.id)) {
             return message.reply("Tu n'as pas la permission d'utiliser cette commande.");
