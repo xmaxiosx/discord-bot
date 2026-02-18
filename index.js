@@ -11,10 +11,28 @@ const client = new Client({
 client.on('ready', () => {
     console.log(`Connecté en tant que ${client.user.tag}`);
 });
+// Commande pour envoyer le message
+client.on('messageCreate', async (message) => {
+    if (message.content === '!role') {
+        const msg = await message.channel.send("Clique sur 👍 pour recevoir le rôle !");
+        await msg.react('👍');
+    }
+});
+// Quand quelqu’un clique sur la réaction
+client.on('messageReactionAdd', async (reaction, user) => {
+    if (reaction.partial) await reaction.fetch();
+    if (user.bot) return;
 
-client.on('messageCreate', message => {
-    if (message.content === '!ping') {
-        message.reply('Pong !');
+    if (reaction.emoji.name === '👍') {
+        const guild = reaction.message.guild;
+        const member = guild.members.cache.get(user.id);
+
+        const role = guild.roles.cache.find(r => r.name === "Mii"); // Mets le nom du rôle ici
+
+        if (role) {
+            await member.roles.add(role);
+            console.log(`Rôle ajouté à ${user.tag}`);
+        }
     }
 });
 
