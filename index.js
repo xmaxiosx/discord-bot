@@ -18,4 +18,9 @@ client.on('messageCreate', message => {
     }
 });
 
+client.on('messageCreate', message =>{
+    if (message.content === '/love') {
+        message.reply('oui !');
+    }
+})
 client.login(process.env.TOKEN);
