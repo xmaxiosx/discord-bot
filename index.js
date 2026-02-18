@@ -22,8 +22,18 @@ client.on('ready', () => {
 // Commande pour envoyer le message
 client.on('messageCreate', async (message) => {
     if (message.content === '!role') {
-        const msg = await message.channel.send("ecrit");
-        await msg.react('👍');
+
+        // Vérifie si l'utilisateur a le rôle
+        const role = message.guild.roles.cache.find(r => r.name === "Admin");
+
+        if (!message.member.roles.cache.has(role.id)) {
+            return message.reply("Tu n'as pas la permission d'utiliser cette commande.");
+        }
+    
+        if (message.content === '!role') {
+            const msg = await message.channel.send("ecrit");
+            await msg.react('👍');
+        }
     }
 });
 // Quand quelqu’un clique sur la réaction
