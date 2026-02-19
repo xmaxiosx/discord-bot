@@ -13,12 +13,15 @@ const client = new Client({
         Partials.Channel,
         Partials.Reaction
     ]
+
 });
 
 client.on('ready', () => {
     console.log(`Connecté en tant que ${client.user.tag}`);
 });
-
+///////////////////
+//code regle role//
+///////////////////
 // Commande fusionnée
 client.on('messageCreate', async (message) => {
     if (message.content === '!setup_reglement') {
@@ -36,11 +39,11 @@ client.on('messageCreate', async (message) => {
         if (!reglementChannel) return message.reply("Salon règlement introuvable.");
 
         // Salon pour le message de rôle
-        const roleChannel = client.channels.cache.get("1474124925739733113");
+        const roleChannel = client.channels.cache.get("1473646942264229929");
         if (!roleChannel) return message.reply("Salon rôle introuvable.");
 
         // Embed règlement
-        const embed = new EmbedBuilder()
+        const embed1 = new EmbedBuilder()
             .setColor('#850a0a')
             .setTitle('📘 Règlement du serveur')
             .setDescription("Merci de lire attentivement les règles ci-dessous.")
@@ -90,16 +93,62 @@ client.on('messageCreate', async (message) => {
             .setTimestamp();
 
         // Envoi du règlement
-        await reglementChannel.send({ embeds: [embed] });
+        await reglementChannel.send({ embeds: [embed1] });
+        
+        const embed2 = new EmbedBuilder()
+            .setColor('#ffffff')
+            .setTitle('📘 Role')
+            .setDescription("Merci de prendre le role pour avoir accées au serveurs.")
 
         // Envoi du message pour les rôles
-        const msg = await roleChannel.send("Clique sur 🔥 pour recevoir le rôle **Mii** !");
+        const msg = await roleChannel.send({ embeds: [embed2] });
         await msg.react('🔥');
 
         message.reply("Configuration terminée !");
     }
 });
 
+client.on('messageCreate', (message) => {
+    if (message.author.bot) return;
+
+    const userId = message.author.id;
+
+    // Si l'utilisateur n'existe pas encore dans le fichier
+    if (!levels[userId]) {
+        levels[userId] = {
+            xp: 0,
+            level: 1
+        };
+    }
+
+    // Ajouter de l'XP
+    const xpGain = Math.floor(Math.random() * 10) + 5; // entre 5 et 15 XP
+    levels[userId].xp += xpGain;
+
+    // Calcul du niveau
+    const xpNeeded = levels[userId].level * 100;
+
+    if (levels[userId].xp >= xpNeeded) {
+        levels[userId].level++;
+        levels[userId].xp = 0;
+
+        message.channel.send(`🎉 **${message.author.username}** vient de passer niveau **${levels[userId].level}** !`);
+    }
+
+    saveLevels();
+});
+//commande voir lv
+client.on('messageCreate', (message) => {
+    if (message.content === '!level') {
+        const userId = message.author.id;
+
+        if (!levels[userId]) {
+            return message.reply("Tu n'as pas encore de niveau.");
+        }
+
+        message.reply(`📊 Tu es niveau **${levels[userId].level}** avec **${levels[userId].xp} XP**.`);
+    }
+});
 // Réaction : ajouter rôle
 client.on('messageReactionAdd', async (reaction, user) => {
     if (reaction.partial) await reaction.fetch();
