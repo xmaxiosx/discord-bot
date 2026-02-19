@@ -1,5 +1,12 @@
 const { Client, GatewayIntentBits, Partials, EmbedBuilder } = require('discord.js');
 
+const fs = require('fs');
+let levels = require('./levels.json');
+
+function saveLevels() {
+    fs.writeFileSync('./levels.json', JSON.stringify(levels, null, 2));
+}
+
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -108,12 +115,28 @@ client.on('messageCreate', async (message) => {
     }
 });
 
+// Cooldown anti-spam (en millisecondes)
+const cooldown = new Map();
+const COOLDOWN_TIME = 2000; // 2 secondes
+
 client.on('messageCreate', (message) => {
     if (message.author.bot) return;
 
     const userId = message.author.id;
 
-    // Si l'utilisateur n'existe pas encore dans le fichier
+    // Vérifier le cooldown
+    if (cooldown.has(userId)) {
+        const lastMessage = cooldown.get(userId);
+        const now = Date.now();
+
+        if (now - lastMessage < COOLDOWN_TIME) {
+            return; // pas d'XP si spam
+        }
+    }
+
+    cooldown.set(userId, Date.now());
+
+    // Initialiser l'utilisateur si pas encore enregistré
     if (!levels[userId]) {
         levels[userId] = {
             xp: 0,
@@ -121,8 +144,8 @@ client.on('messageCreate', (message) => {
         };
     }
 
-    // Ajouter de l'XP
-    const xpGain = Math.floor(Math.random() * 10) + 5; // entre 5 et 15 XP
+    // Gain d'XP
+    const xpGain = Math.floor(Math.random() * 10) + 5;
     levels[userId].xp += xpGain;
 
     // Calcul du niveau
@@ -137,7 +160,8 @@ client.on('messageCreate', (message) => {
 
     saveLevels();
 });
-//commande voir lv
+
+//voir level
 client.on('messageCreate', (message) => {
     if (message.content === '!level') {
         const userId = message.author.id;
@@ -146,9 +170,47 @@ client.on('messageCreate', (message) => {
             return message.reply("Tu n'as pas encore de niveau.");
         }
 
-        message.reply(`📊 Tu es niveau **${levels[userId].level}** avec **${levels[userId].xp} XP**.`);
+        const embed = new EmbedBuilder()
+            .setColor('#00aaff')
+            .setTitle(`📊 Niveau de ${message.author.username}`)
+            .addFields(
+                { name: "Niveau", value: `${levels[userId].level}`, inline: true },
+                { name: "XP", value: `${levels[userId].xp} / ${levels[userId].level * 100}`, inline: true }
+            )
+            .setThumbnail(message.author.displayAvatarURL())
+            .setTimestamp();
+
+        message.reply({ embeds: [embed] });
     }
 });
+
+//leader borad
+client.on('messageCreate', (message) => {
+    if (message.content === '!leaderboard') {
+
+        const sorted = Object.entries(levels)
+            .sort((a, b) => b[1].level - a[1].level || b[1].xp - a[1].xp)
+            .slice(0, 10);
+
+        let description = "";
+
+        sorted.forEach(([userId, data], index) => {
+            const user = message.guild.members.cache.get(userId);
+            const username = user ? user.user.username : "Utilisateur inconnu";
+
+            description += `**${index + 1}. ${username}** — Niveau ${data.level} (${data.xp} XP)\n`;
+        });
+
+        const embed = new EmbedBuilder()
+            .setColor('#ffaa00')
+            .setTitle("🏆 Classement des niveaux")
+            .setDescription(description)
+            .setTimestamp();
+
+        message.reply({ embeds: [embed] });
+    }
+});
+
 // Réaction : ajouter rôle
 client.on('messageReactionAdd', async (reaction, user) => {
     if (reaction.partial) await reaction.fetch();
