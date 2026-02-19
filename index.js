@@ -36,11 +36,11 @@ client.on('messageCreate', async (message) => {
         if (!reglementChannel) return message.reply("Salon règlement introuvable.");
 
         // Salon pour le message de rôle
-        const roleChannel = client.channels.cache.get("1474124925739733113");
+        const roleChannel = client.channels.cache.get("1473646942264229929");
         if (!roleChannel) return message.reply("Salon rôle introuvable.");
 
         // Embed règlement
-        const embed = new EmbedBuilder()
+        const embed1 = new EmbedBuilder()
             .setColor('#850a0a')
             .setTitle('📘 Règlement du serveur')
             .setDescription("Merci de lire attentivement les règles ci-dessous.")
@@ -90,10 +90,15 @@ client.on('messageCreate', async (message) => {
             .setTimestamp();
 
         // Envoi du règlement
-        await reglementChannel.send({ embeds: [embed] });
+        await reglementChannel.send({ embeds: [embed1] });
+        
+        const embed2 = new EmbedBuilder()
+            .setColor('#ffffff')
+            .setTitle('📘 Role')
+            .setDescription("Merci de prendre le role pour avoir accées au serveurs.")
 
         // Envoi du message pour les rôles
-        const msg = await roleChannel.send("Clique sur 🔥 pour recevoir le rôle **Mii** !");
+        const msg = await roleChannel.send({ embeds: [embed2] });
         await msg.react('🔥');
 
         message.reply("Configuration terminée !");
