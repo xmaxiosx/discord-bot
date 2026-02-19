@@ -21,7 +21,7 @@ client.on('ready', () => {
 
 // Commande fusionnée
 client.on('messageCreate', async (message) => {
-    if (message.content === '!setupreglement') {
+    if (message.content === '!setup_reglement') {
 
         const allowedRoleName = "Maire"; // rôle autorisé
         const allowedRole = message.guild.roles.cache.find(r => r.name === allowedRoleName);
