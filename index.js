@@ -79,7 +79,7 @@ client.on('messageCreate', async (message) => {
             return message.reply("Tu n'as pas la permission d'utiliser cette commande.");
         }
 
-        const channel = client.channels.cache.get("https://discord.com/channels/1473597032924184596/1473646942264229929");
+        const channel = client.channels.cache.get("1473646942264229929");
         if (!channel) return message.reply("Salon introuvable.");
 
         const embed = new EmbedBuilder()
