@@ -70,43 +70,64 @@ client.on('messageReactionRemove', async (reaction, user) => {
     }
 });
 
-client.on('messageCreate', async (message) => {
-    if (message.content === '!reglement') {
+client.on('ready', async () => {
+    console.log(`Connecté en tant que ${client.user.tag}`);
 
-        const embed = new EmbedBuilder()
-            .setColor('#ff0000')
-            .setTitle('⚠️ ON NE FAIT PAS DE DÉCALE ⚠️')
-            .setDescription('**PAS DE NÉGOCIATION POSSIBLE**')
-            .addFields(
-                {
-                    name: '📂 — 1 — Règlement cas général ❗',
-                    value:
-                    `§1.1 - Votre photo de profil ne doit pas contenir d'image NSFW.
-§1.2 - Votre bannière ne doit pas contenir d'image ou vidéo NSFW.
-§1.3 - Votre pseudo ne doit pas ressembler à un des staffs.
-§1.4 - Votre biographie ne doit pas rediriger vers des arnaques ou liens explicites.
-§1.5 - Le contournement de bannissement est interdit.`
-                },
-                {
-                    name: '📂 — 2 — Règlement textuel ❗',
-                    value:
-                    `§2.1 - Toutes insultes sont strictement interdites.
-§2.2 - Les sujets politiques ou religieux sont interdits.
-§2.3 - Mentionner quelqu'un de manière abusive est interdit.
-§2.4 - Utilisez les salons prévus à leur usage.
-§2.5 - Restez polis et courtois.
-§2.6 - Le partage d'informations personnelles sans consentement est interdit.
-§2.7 - La promotion d’un autre serveur Discord sans autorisation est interdite.
-§2.8 - Les messages à sous-entendu sexuel, racistes ou haineux sont interdits.
-§2.9 - Les moqueries humoristiques ne sont permises que si les deux parties y consentent.`
-                }
-            )
-            .setFooter({ text: 'Merci de respecter le règlement.' })
-            .setTimestamp();
+    const channel = client.channels.cache.get("ID_DU_SALON");
+    if (!channel) return console.log("Salon introuvable.");
 
-        await message.channel.send({ embeds: [embed] });
-    }
+    const embed = new EmbedBuilder()
+        .setColor('#3498db')
+        .setTitle('📘 Règlement du serveur')
+        .setDescription("Merci de lire attentivement les règles ci-dessous.")
+        .addFields(
+            {
+                name: "🔹 1. Respect avant tout",
+                value:
+                `→ Aucune insulte, propos haineux, racistes, sexistes, homophobes ou discriminatoires ne sera toléré.
+→ Restez courtois, même en cas de désaccord.`
+            },
+            {
+                name: "🔹 2. Pas de spam ni de flood",
+                value:
+                `→ Pas de messages répétitifs, abus de majuscules ou réactions en chaîne.
+→ Ne spammez pas les salons, ni en texte ni en vocal.`
+            },
+            {
+                name: "🔹 3. Utilisez les bons salons",
+                value:
+                `→ Parlez dans le salon approprié.
+→ Lisez la description des salons si besoin.`
+            },
+            {
+                name: "🔹 4. Pas de pub sans autorisation",
+                value:
+                `→ Aucune publicité sans accord du staff.`
+            },
+            {
+                name: "🔹 5. Contenu NSFW interdit",
+                value:
+                `→ Aucun contenu choquant, sexuel ou inapproprié.`
+            },
+            {
+                name: "🔹 6. Pseudonymes corrects",
+                value:
+                `→ Choisissez un pseudo lisible et respectueux.
+→ Pas de noms offensants ou provocants.`
+            },
+            {
+                name: "🔹 7. Respect du staff",
+                value:
+                `→ Les décisions des modérateurs doivent être respectées.
+→ En cas de problème, contactez-les en privé ou dans un salon prévu.`
+            }
+        )
+        .setFooter({ text: "Merci de respecter le règlement du serveur." })
+        .setTimestamp();
+
+    await channel.send({ embeds: [embed] });
 });
+
 
 client.on('messageCreate', message =>{
     if (message.content === '/love') {
