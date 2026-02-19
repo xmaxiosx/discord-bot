@@ -15,75 +15,33 @@ const client = new Client({
     ]
 });
 
-
 client.on('ready', () => {
     console.log(`Connecté en tant que ${client.user.tag}`);
 });
-// Commande pour envoyer le message
+
+// Commande fusionnée
 client.on('messageCreate', async (message) => {
-    if (message.content === '!role') {
+    if (message.content === '!setupreglement') {
 
-        // Vérifie si l'utilisateur a le rôle
-        const role = message.guild.roles.cache.find(r => r.name === "Maire");
+        const allowedRoleName = "Maire"; // rôle autorisé
+        const allowedRole = message.guild.roles.cache.find(r => r.name === allowedRoleName);
 
-        if (!message.member.roles.cache.has(role.id)) {
-            return message.reply("Tu n'as pas la permission d'utiliser cette commande.");
-        }
-    
-        if (message.content === '!role') {
-            const msg = await message.channel.send("ecrit");
-            await msg.react('👍');
-        }
-    }
-});
-// Quand quelqu’un clique sur la réaction
-client.on('messageReactionAdd', async (reaction, user) => {
-    if (reaction.partial) await reaction.fetch();
-    if (user.bot) return;
-
-    if (reaction.emoji.name === '👍') {
-        const guild = reaction.message.guild;
-        const member = guild.members.cache.get(user.id);
-
-        const role = guild.roles.cache.find(r => r.name === "Mii"); // Mets le nom du rôle ici
-
-        if (role) {
-            await member.roles.add(role);
-            console.log(`Rôle ajouté à ${user.tag}`);
-        }
-    }
-});
-client.on('messageReactionRemove', async (reaction, user) => {
-    if (reaction.partial) await reaction.fetch();
-    if (user.bot) return;
-
-    if (reaction.emoji.name === '👍') {
-        const guild = reaction.message.guild;
-        const member = guild.members.cache.get(user.id);
-
-        const role = guild.roles.cache.find(r => r.name === "Mii");
-
-        if (role) {
-            await member.roles.remove(role);
-            console.log(`Rôle retiré à ${user.tag}`);
-        }
-    }
-});
-
-client.on('messageCreate', async (message) => {
-    if (message.content === '!reglement') {
-
-        // Optionnel : limiter aux admins
-        const adminRole = message.guild.roles.cache.find(r => r.name === "Maire");
-        if (!message.member.roles.cache.has(adminRole?.id)) {
+        if (!allowedRole) return message.reply(`Le rôle **${allowedRoleName}** est introuvable.`);
+        if (!message.member.roles.cache.has(allowedRole.id)) {
             return message.reply("Tu n'as pas la permission d'utiliser cette commande.");
         }
 
-        const channel = client.channels.cache.get("1473646942264229929");
-        if (!channel) return message.reply("Salon introuvable.");
+        // Salon pour le règlement
+        const reglementChannel = client.channels.cache.get("1473646942264229929");
+        if (!reglementChannel) return message.reply("Salon règlement introuvable.");
 
+        // Salon pour le message de rôle
+        const roleChannel = client.channels.cache.get("1474124925739733113");
+        if (!roleChannel) return message.reply("Salon rôle introuvable.");
+
+        // Embed règlement
         const embed = new EmbedBuilder()
-            .setColor('#aa0c0c')
+            .setColor('#850a0a')
             .setTitle('📘 Règlement du serveur')
             .setDescription("Merci de lire attentivement les règles ci-dessous.")
             .addFields(
@@ -102,7 +60,7 @@ client.on('messageCreate', async (message) => {
                 {
                     name: "🔹 3. Utilisez les bons salons",
                     value:
-                    `→ Parlez dans le salon approprié.
+                    `→ Merci de parler dans le salon approprié.
 → Lisez la description des salons si besoin.`
                 },
                 {
@@ -113,12 +71,12 @@ client.on('messageCreate', async (message) => {
                 {
                     name: "🔹 5. Contenu NSFW interdit",
                     value:
-                    `→ Aucun contenu choquant, sexuel ou inapproprié.`
+                    `→ Aucun contenu choquant, sexuel ou inapproprié n’est autorisé.`
                 },
                 {
                     name: "🔹 6. Pseudonymes corrects",
                     value:
-                    `→ Choisissez un pseudo lisible et respectueux.
+                    `→ Choisis un pseudo lisible et respectueux.
 → Pas de noms offensants ou provocants.`
                 },
                 {
@@ -131,11 +89,44 @@ client.on('messageCreate', async (message) => {
             .setFooter({ text: "Merci de respecter le règlement du serveur." })
             .setTimestamp();
 
-        await channel.send({ embeds: [embed] });
+        // Envoi du règlement
+        await reglementChannel.send({ embeds: [embed] });
+
+        // Envoi du message pour les rôles
+        const msg = await roleChannel.send("Clique sur 🔥 pour recevoir le rôle **Mii** !");
+        await msg.react('🔥');
+
+        message.reply("Configuration terminée !");
     }
 });
 
+// Réaction : ajouter rôle
+client.on('messageReactionAdd', async (reaction, user) => {
+    if (reaction.partial) await reaction.fetch();
+    if (user.bot) return;
 
+    if (reaction.emoji.name === '🔥') {
+        const guild = reaction.message.guild;
+        const member = guild.members.cache.get(user.id);
+        const role = guild.roles.cache.find(r => r.name === "Mii");
+
+        if (role) await member.roles.add(role);
+    }
+});
+
+// Réaction : retirer rôle
+client.on('messageReactionRemove', async (reaction, user) => {
+    if (reaction.partial) await reaction.fetch();
+    if (user.bot) return;
+
+    if (reaction.emoji.name === '🔥') {
+        const guild = reaction.message.guild;
+        const member = guild.members.cache.get(user.id);
+        const role = guild.roles.cache.find(r => r.name === "Mii");
+
+        if (role) await member.roles.remove(role);
+    }
+});
 
 client.on('messageCreate', message =>{
     if (message.content === '/love') {
