@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, Partials } = require('discord.js');
+const { Client, GatewayIntentBits, Partials, EmbedBuilder } = require('discord.js');
 
 const client = new Client({
     intents: [
@@ -67,6 +67,44 @@ client.on('messageReactionRemove', async (reaction, user) => {
             await member.roles.remove(role);
             console.log(`Rôle retiré à ${user.tag}`);
         }
+    }
+});
+
+client.on('messageCreate', async (message) => {
+    if (message.content === '!reglement') {
+
+        const embed = new EmbedBuilder()
+            .setColor('#ff0000')
+            .setTitle('⚠️ ON NE FAIT PAS DE DÉCALE ⚠️')
+            .setDescription('**PAS DE NÉGOCIATION POSSIBLE**')
+            .addFields(
+                {
+                    name: '📂 — 1 — Règlement cas général ❗',
+                    value:
+                    `§1.1 - Votre photo de profil ne doit pas contenir d'image NSFW.
+§1.2 - Votre bannière ne doit pas contenir d'image ou vidéo NSFW.
+§1.3 - Votre pseudo ne doit pas ressembler à un des staffs.
+§1.4 - Votre biographie ne doit pas rediriger vers des arnaques ou liens explicites.
+§1.5 - Le contournement de bannissement est interdit.`
+                },
+                {
+                    name: '📂 — 2 — Règlement textuel ❗',
+                    value:
+                    `§2.1 - Toutes insultes sont strictement interdites.
+§2.2 - Les sujets politiques ou religieux sont interdits.
+§2.3 - Mentionner quelqu'un de manière abusive est interdit.
+§2.4 - Utilisez les salons prévus à leur usage.
+§2.5 - Restez polis et courtois.
+§2.6 - Le partage d'informations personnelles sans consentement est interdit.
+§2.7 - La promotion d’un autre serveur Discord sans autorisation est interdite.
+§2.8 - Les messages à sous-entendu sexuel, racistes ou haineux sont interdits.
+§2.9 - Les moqueries humoristiques ne sont permises que si les deux parties y consentent.`
+                }
+            )
+            .setFooter({ text: 'Merci de respecter le règlement.' })
+            .setTimestamp();
+
+        await message.channel.send({ embeds: [embed] });
     }
 });
 
