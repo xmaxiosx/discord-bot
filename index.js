@@ -70,63 +70,71 @@ client.on('messageReactionRemove', async (reaction, user) => {
     }
 });
 
-client.on('ready', async () => {
-    console.log(`Connecté en tant que ${client.user.tag}`);
+client.on('messageCreate', async (message) => {
+    if (message.content === '!reglement') {
 
-    const channel = client.channels.cache.get("ID_DU_SALON");
-    if (!channel) return console.log("Salon introuvable.");
+        // Optionnel : limiter aux admins
+        const adminRole = message.guild.roles.cache.find(r => r.name === "Maire");
+        if (!message.member.roles.cache.has(adminRole?.id)) {
+            return message.reply("Tu n'as pas la permission d'utiliser cette commande.");
+        }
 
-    const embed = new EmbedBuilder()
-        .setColor('#3498db')
-        .setTitle('📘 Règlement du serveur')
-        .setDescription("Merci de lire attentivement les règles ci-dessous.")
-        .addFields(
-            {
-                name: "🔹 1. Respect avant tout",
-                value:
-                `→ Aucune insulte, propos haineux, racistes, sexistes, homophobes ou discriminatoires ne sera toléré.
+        const channel = client.channels.cache.get("https://discord.com/channels/1473597032924184596/1473646942264229929");
+        if (!channel) return message.reply("Salon introuvable.");
+
+        const embed = new EmbedBuilder()
+            .setColor('#aa0c0c')
+            .setTitle('📘 Règlement du serveur')
+            .setDescription("Merci de lire attentivement les règles ci-dessous.")
+            .addFields(
+                {
+                    name: "🔹 1. Respect avant tout",
+                    value:
+                    `→ Aucune insulte, propos haineux, racistes, sexistes, homophobes ou discriminatoires ne sera toléré.
 → Restez courtois, même en cas de désaccord.`
-            },
-            {
-                name: "🔹 2. Pas de spam ni de flood",
-                value:
-                `→ Pas de messages répétitifs, abus de majuscules ou réactions en chaîne.
+                },
+                {
+                    name: "🔹 2. Pas de spam ni de flood",
+                    value:
+                    `→ Pas de messages répétitifs, abus de majuscules ou réactions en chaîne.
 → Ne spammez pas les salons, ni en texte ni en vocal.`
-            },
-            {
-                name: "🔹 3. Utilisez les bons salons",
-                value:
-                `→ Parlez dans le salon approprié.
+                },
+                {
+                    name: "🔹 3. Utilisez les bons salons",
+                    value:
+                    `→ Parlez dans le salon approprié.
 → Lisez la description des salons si besoin.`
-            },
-            {
-                name: "🔹 4. Pas de pub sans autorisation",
-                value:
-                `→ Aucune publicité sans accord du staff.`
-            },
-            {
-                name: "🔹 5. Contenu NSFW interdit",
-                value:
-                `→ Aucun contenu choquant, sexuel ou inapproprié.`
-            },
-            {
-                name: "🔹 6. Pseudonymes corrects",
-                value:
-                `→ Choisissez un pseudo lisible et respectueux.
+                },
+                {
+                    name: "🔹 4. Pas de pub sans autorisation",
+                    value:
+                    `→ Aucune publicité sans accord du staff.`
+                },
+                {
+                    name: "🔹 5. Contenu NSFW interdit",
+                    value:
+                    `→ Aucun contenu choquant, sexuel ou inapproprié.`
+                },
+                {
+                    name: "🔹 6. Pseudonymes corrects",
+                    value:
+                    `→ Choisissez un pseudo lisible et respectueux.
 → Pas de noms offensants ou provocants.`
-            },
-            {
-                name: "🔹 7. Respect du staff",
-                value:
-                `→ Les décisions des modérateurs doivent être respectées.
+                },
+                {
+                    name: "🔹 7. Respect du staff",
+                    value:
+                    `→ Les décisions des modérateurs doivent être respectées.
 → En cas de problème, contactez-les en privé ou dans un salon prévu.`
-            }
-        )
-        .setFooter({ text: "Merci de respecter le règlement du serveur." })
-        .setTimestamp();
+                }
+            )
+            .setFooter({ text: "Merci de respecter le règlement du serveur." })
+            .setTimestamp();
 
-    await channel.send({ embeds: [embed] });
+        await channel.send({ embeds: [embed] });
+    }
 });
+
 
 
 client.on('messageCreate', message =>{
